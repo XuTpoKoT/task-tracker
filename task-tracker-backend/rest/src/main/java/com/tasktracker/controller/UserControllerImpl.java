@@ -19,6 +19,5 @@ public class UserControllerImpl implements UserController {
         AppUser appUser = SecurityUtils.getSecurityUser().getAppUser();
         log.info("getUserInfo for " + appUser.getEmail());
         return userMapper.userToDto(appUser);
-
     }
 }

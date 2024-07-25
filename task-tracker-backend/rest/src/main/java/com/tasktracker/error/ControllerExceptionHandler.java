@@ -23,7 +23,8 @@ import java.util.List;
 @Hidden
 @Slf4j
 public class ControllerExceptionHandler {
-    @ExceptionHandler(value = {HttpMessageNotReadableException.class, ConstraintViolationException.class})
+    @ExceptionHandler(value = {HttpMessageNotReadableException.class, ConstraintViolationException.class,
+        PasswordsDontMatchException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDescription badRequest(RuntimeException ex) {
         return new ErrorDescription(ex.getClass().getName(), ex.getMessage());
@@ -32,18 +33,13 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDescription badRequestArgument(MethodArgumentNotValidException ex) {
-        List<FieldError> fieldErrors = ex.getFieldErrors();
-        List<String> errorMessages = new ArrayList<>();
-        for (FieldError fieldError : fieldErrors) {
-            errorMessages.add(fieldError.getDefaultMessage());
-        }
-        return new ErrorDescription(ex.getClass().getName(), errorMessages.toString());
+        String errorMessage = ex.getFieldErrors().get(0).getDefaultMessage();
+        return new ErrorDescription(ex.getClass().getName(), errorMessage);
     }
 
     @ExceptionHandler(value = {BadCredentialsException.class, InternalAuthenticationServiceException.class})
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
     public ErrorDescription badCredentials(RuntimeException ex) {
-        log.info("Не удалось авторизоваться", ex);
         return new ErrorDescription(ex.getClass().getName(), ex.getMessage());
     }
 
@@ -62,18 +58,21 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(value = {OccupiedEmailException.class})
     @ResponseStatus(value = HttpStatus.CONFLICT)
     public ErrorDescription conflict(RuntimeException ex) {
+        log.info(ex.getMessage());
         return new ErrorDescription(ex.getClass().getName(), ex.getMessage());
     }
 
     @ExceptionHandler(value = {ConnectException.class})
     @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorDescription connectException(RuntimeException ex) {
+        log.error(ex.getMessage());
         return new ErrorDescription(ex.getClass().getName(), ex.getMessage());
     }
 
     @ExceptionHandler(value = {RuntimeException.class})
     @ResponseStatus(value = HttpStatus.BAD_GATEWAY)
     public ErrorDescription unknownException(RuntimeException ex) {
+        log.error(ex.getMessage());
         return new ErrorDescription(ex.getClass().getName(), ex.getMessage());
     }
 }

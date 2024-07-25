@@ -7,9 +7,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ms_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "${DB_PORT}:5432"
+      - "${POSTGRES_PORT}:5432"
   rest:
     container_name: tt_rest
     depends_on:
@@ -17,12 +17,13 @@ services:
     ports:
       - ${REST_PORT}:${REST_PORT}
     build:
-      context: task-tracker-backend/rest
+      context: task-tracker-backend
+      dockerfile: Dockerfile.rest
     environment:
-      DB_USERNAME: ${POSTGRES_USER}
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
-      DB_NAME: ${POSTGRES_DB}
-      DB_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
       API_PORT: ${REST_PORT}
   front:
     container_name: tt_front
@@ -33,5 +34,5 @@ services:
     environment:
       PORT: ${FRONT_PORT}
 volumes:
-  ms_data:
+  postgres_data:
 

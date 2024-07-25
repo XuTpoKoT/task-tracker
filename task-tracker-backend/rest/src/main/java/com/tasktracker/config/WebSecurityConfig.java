@@ -1,5 +1,6 @@
 package com.tasktracker.config;
 
+import com.tasktracker.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.stream.Stream;
 
@@ -28,14 +30,16 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final String apiPrefix;
     private final String[] publicUrls;
 
     public WebSecurityConfig(UserDetailsService userDetailsService,
-                             @Value("${api-version}") String apiVersion) {
+                             JwtAuthenticationFilter jwtAuthenticationFilter, @Value("${api-version}") String apiVersion) {
         this.userDetailsService = userDetailsService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.apiPrefix = "/" + apiVersion;
-        publicUrls = Stream.of("/swagger-ui/**", "/api-docs", "/user").map(s -> (apiPrefix + s)).toList()
+        publicUrls = Stream.of("/swagger-ui/**", "/api-docs").map(s -> (apiPrefix + s)).toList()
                 .toArray(new String[0]);
     }
 
@@ -57,6 +61,7 @@ public class WebSecurityConfig {
                     e->e.accessDeniedHandler((
                             request, response, accessDeniedException)->response.setStatus(403))
                     .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider(userDetailsService));
         return http.build();
     }

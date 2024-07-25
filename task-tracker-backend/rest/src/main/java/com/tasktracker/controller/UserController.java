@@ -27,10 +27,6 @@ public interface UserController {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorDescription.class))}),
             @ApiResponse(
-                    responseCode = "403",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorDescription.class))}),
-            @ApiResponse(
                     responseCode = "503",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorDescription.class))})

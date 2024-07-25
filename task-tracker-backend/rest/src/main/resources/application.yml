@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5434/task_tracker_db}
-    username: ${DB_USERNAME:dev_user}
-    password: ${DB_PASSWORD:234}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5434/tt_postgres}
+    username: ${POSTGRES_USERNAME:dev_user}
+    password: ${POSTGRES_PASSWORD:234}
   jpa:
     hibernate:
       ddl-auto: none
@@ -28,3 +28,4 @@ logging:
   file:
     name: ".log"
 
+token-signing-key: ${SIGNING_KEY:53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855}
