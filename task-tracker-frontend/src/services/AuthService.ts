@@ -1,33 +1,10 @@
 import $api from "../http";
 import {AuthResponse} from "../models/response/AuthResponse";
+import SecurityContext from "./SecurityContext";
 
 export default class AuthService {
-    private isAuth = false;
     public static INSTANCE = new AuthService();
-    authSubscribers = [];
     private AuthService(){}
-
-    isAuthenticated() :boolean {
-        return this.isAuth;
-    }
-
-    // setAuthenticated(isAuth) {
-    //     this.isAuthenticated = isAuth;
-    //     this.notifySubscribers(isAuth);
-    // }
-    //
-    // // Метод подписки на изменения состояния аутентификации
-    // subscribeAuthState(callback) {
-    //     this.authSubscribers.push(callback);
-    //     // Возвращаем функцию для отписки от подписки
-    //     return () => {
-    //         this.authSubscribers = this.authSubscribers.filter(subscriber => subscriber !== callback);
-    //     };
-    // }
-    // // Пример метода для уведомления подписчиков об изменении состояния
-    // notifySubscribers(isAuth) {
-    //     this.authSubscribers.forEach(subscriber => subscriber(isAuth));
-    // }
 
     signIn(email: string, password: string) {
         try {
@@ -35,7 +12,8 @@ export default class AuthService {
                 .then(response => {
                     console.log(response);
                     localStorage.setItem('token', response.data.token);
-                    // this.setAuthenticated(true);
+                    SecurityContext.INSTANCE.setAuthenticated(true);
+                    window.location.assign('/');
                 });
         } catch (e: unknown) {
             if (e instanceof Error) {
@@ -52,7 +30,7 @@ export default class AuthService {
                 .then(response => {
                     console.log(response);
                     localStorage.setItem('token', response.data.token);
-                    // this.setAuthenticated(true);
+                    SecurityContext.INSTANCE.setAuthenticated(true);
                 });
         } catch (e) {
             if (e instanceof Error) {
@@ -68,7 +46,7 @@ export default class AuthService {
             $api.post<AuthResponse>('/auth/sign-out')
                 .then(response => {
                     localStorage.removeItem('token');
-                    // this.setAuthenticated(false);
+                    SecurityContext.INSTANCE.setAuthenticated(false);
                 });
         } catch (e) {
             if (e instanceof Error) {
