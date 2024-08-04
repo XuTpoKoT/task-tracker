@@ -1,19 +1,11 @@
 import React from 'react';
-import {AppBar, Box, CssBaseline, Link, Toolbar, Typography} from '@mui/material';
+import {AppBar, Box, Button, CssBaseline, Link, Toolbar, Typography} from '@mui/material';
 import {useAuth} from "../services/SecurityContext";
-
-const navItemsForAnonymous = {
-    'Home': '/',
-    'Sign In': '/sign-in',
-    'Sign Up': '/sign-up',
-};
-const navItemsForAuthenticated = {
-    'Home': '/',
-    'Sign Out': '/sign-out',
-};
+import AuthService from "../services/AuthService";
 
 const MenuBar = () => {
-    const navItems = useAuth() ? navItemsForAuthenticated : navItemsForAnonymous;
+    const isAuthenticated = useAuth();
+    const authService = AuthService.INSTANCE;
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -28,12 +20,31 @@ const MenuBar = () => {
                         Task Tracker
                     </Typography>
                     <Box sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                        {Object.entries(navItems).map(([text, path]) => (
-                            <Link key={text} sx={{ color: '#fff' }} borderLeft={5} borderRight={5}
-                                  borderColor={'#3636e3'} href={path}>
-                                {text}
-                            </Link>
-                        ))}
+                        <Link key={'Home'} sx={{ color: '#fff' }} borderLeft={5} borderRight={5}
+                              borderColor={'#3636e3'} href={'/'}>
+                            {'Home'}
+                        </Link>
+                        { isAuthenticated ? (
+                            <Button
+                                onClick={() => {
+                                    authService.signOut();
+                                }}
+                            >
+                                Sign out
+                            </Button>)
+                            : (
+                                <>
+                                <Link key={'Sign in'} sx={{ color: '#fff' }} borderLeft={5} borderRight={5}
+                                      borderColor={'#3636e3'} href={'/sign-in'}>
+                                    {'Sign in'}
+                                </Link>
+                                <Link key={'Sign up'} sx={{ color: '#fff' }} borderLeft={5} borderRight={5}
+                                      borderColor={'#3636e3'} href={'/sign-up'}>
+                                    {'Sign up'}
+                                </Link>
+                                </>
+                            )
+                        }
                     </Box>
                 </Toolbar>
             </AppBar>

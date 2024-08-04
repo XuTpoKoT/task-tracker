@@ -6,11 +6,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import MenuBar from "./components/MenuBar";
 
 const App = () => {
+    console.log('Token:', localStorage.getItem('token'));
 
     return (
         <>
-            <MenuBar/>
             <BrowserRouter>
+                <MenuBar/>
                 <Routes>
                     <Route path="/" element={<div>Home</div>} />
                     <Route path="/sign-up" element={<SignUpForm/>} />

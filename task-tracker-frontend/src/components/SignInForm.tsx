@@ -26,7 +26,7 @@ const SignInForm = () => {
 
     const onSubmit : SubmitHandler<SignInSchemaType> = (data) => {
         authService.signIn(data.email, data.password);
-        navigate('/');
+        // navigate('/');
     };
 
     return (

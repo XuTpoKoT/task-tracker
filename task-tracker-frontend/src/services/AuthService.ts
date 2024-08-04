@@ -12,8 +12,8 @@ export default class AuthService {
                 .then(response => {
                     console.log(response);
                     localStorage.setItem('token', response.data.token);
+                    console.log('Token saved:', localStorage.getItem('token'));
                     SecurityContext.INSTANCE.setAuthenticated(true);
-                    window.location.assign('/');
                 });
         } catch (e: unknown) {
             if (e instanceof Error) {
@@ -42,19 +42,8 @@ export default class AuthService {
     }
 
     signOut() {
-        try {
-            $api.post<AuthResponse>('/auth/sign-out')
-                .then(response => {
-                    localStorage.removeItem('token');
-                    SecurityContext.INSTANCE.setAuthenticated(false);
-                });
-        } catch (e) {
-            if (e instanceof Error) {
-                console.log(e.message);
-            } else if (typeof e === 'object' && e !== null) {
-                console.log((e as any).response?.data?.message);
-            }
-        }
+        localStorage.removeItem('token');
+        SecurityContext.INSTANCE.setAuthenticated(false);
     }
 }
 
