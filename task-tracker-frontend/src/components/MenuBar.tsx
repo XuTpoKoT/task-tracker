@@ -1,11 +1,13 @@
 import React from 'react';
-import {AppBar, Box, Button, CssBaseline, Link, Toolbar, Typography} from '@mui/material';
-import {useAuth} from "../services/SecurityContext";
-import AuthService from "../services/AuthService";
+import {AppBar, Box, Button, CssBaseline, Toolbar, Typography} from '@mui/material';
+import { Link } from 'react-router-dom';
+import authStore from "../store/AuthStore";
+import '../style/style.css';
+import menuBtnStyle from "../style/style";
 
 const MenuBar = () => {
-    const isAuthenticated = useAuth();
-    const authService = AuthService.INSTANCE;
+    const isAuth = authStore((state) => state.isAuth);
+    const setIsAuth = authStore((state) => state.setIsAuth);
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -20,28 +22,26 @@ const MenuBar = () => {
                         Task Tracker
                     </Typography>
                     <Box sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                        <Link key={'Home'} sx={{ color: '#fff' }} borderLeft={5} borderRight={5}
-                              borderColor={'#3636e3'} href={'/'}>
+                        <Link key={'Home'} to="/" className="link">
                             {'Home'}
                         </Link>
-                        { isAuthenticated ? (
-                            <Button
+                        { isAuth ? (
+                            <Button sx={menuBtnStyle}
                                 onClick={() => {
-                                    authService.signOut();
+                                    setIsAuth(false);
+                                    localStorage.removeItem('token');
                                 }}
                             >
                                 Sign out
                             </Button>)
                             : (
                                 <>
-                                <Link key={'Sign in'} sx={{ color: '#fff' }} borderLeft={5} borderRight={5}
-                                      borderColor={'#3636e3'} href={'/sign-in'}>
-                                    {'Sign in'}
-                                </Link>
-                                <Link key={'Sign up'} sx={{ color: '#fff' }} borderLeft={5} borderRight={5}
-                                      borderColor={'#3636e3'} href={'/sign-up'}>
-                                    {'Sign up'}
-                                </Link>
+                                    <Link key={'Sign in'} to="/sign-in" className="link">
+                                        {'Sign in'}
+                                    </Link>
+                                    <Link key={'Sign up'} to="/sign-up" className="link">
+                                        {'Sign up'}
+                                    </Link>
                                 </>
                             )
                         }

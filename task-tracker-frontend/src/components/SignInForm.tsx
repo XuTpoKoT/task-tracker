@@ -6,6 +6,7 @@ import {z} from "zod";
 import AuthService from "../services/AuthService";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useNavigate} from "react-router-dom";
+import authStore from "../store/AuthStore";
 
 const schema = z.object({
     email: z.string().email('Неверный формат электронной почты'),
@@ -15,9 +16,9 @@ const schema = z.object({
 type SignInSchemaType = z.infer<typeof schema>;
 
 const SignInForm = () => {
-    const authService = AuthService.INSTANCE;
     const navigate = useNavigate();
-    const { register,
+    const setIsAuth = authStore((state) => state.setIsAuth);
+    const {
         control,
         handleSubmit,
         formState: { errors } } = useForm<SignInSchemaType>({
@@ -25,8 +26,17 @@ const SignInForm = () => {
     });
 
     const onSubmit : SubmitHandler<SignInSchemaType> = (data) => {
-        authService.signIn(data.email, data.password);
-        // navigate('/');
+        AuthService.signIn(data.email, data.password)
+            .then(response => {
+                if (response && response.token) {
+                    localStorage.setItem('token', response.token);
+                    console.log('Token saved:', localStorage.getItem('token'));
+                    setIsAuth(true);
+                    navigate('/');
+                } else {
+                    console.log('No token received in response');
+                }
+            });
     };
 
     return (

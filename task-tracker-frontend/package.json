@@ -22,7 +22,8 @@
     "@mui/material": "^5.16.5",
     "@mui/icons-material": "^5.16.5",
     "@emotion/styled": "^11.13.0",
-    "@emotion/react": "^11.13.0"
+    "@emotion/react": "^11.13.0",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "babel-preset-nano-react-app": "^0.1.0",
