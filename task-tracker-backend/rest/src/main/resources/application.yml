@@ -17,7 +17,20 @@ server:
     ${API_PORT:8080}
 api-version:
   "v1"
-
+springdoc:
+  swagger-ui:
+    path: "/${api-version}/swagger-ui"
+    tryItOutEnabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    filter: true
+  api-docs:
+    path:
+      "${api-version}/api-docs"
+  packages-to-scan:
+    "com.tasktracker.controller"
+  show-login-endpoint:
+    true
 logging:
   level:
     org.springframework.web: INFO

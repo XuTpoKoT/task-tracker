@@ -1,7 +1,6 @@
 package com.tasktracker.controller;
 
 import com.tasktracker.dto.response.UserInfoResponse;
-import com.tasktracker.entity.AppUser;
 import com.tasktracker.error.ErrorDescription;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,7 +20,7 @@ public interface UserController {
             @ApiResponse(
                     responseCode = "200",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = AppUser.class))}),
+                            schema = @Schema(implementation = UserInfoResponse.class))}),
             @ApiResponse(
                     responseCode = "401",
                     content = {@Content(mediaType = "application/json",

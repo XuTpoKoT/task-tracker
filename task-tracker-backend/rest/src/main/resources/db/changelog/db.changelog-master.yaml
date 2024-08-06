@@ -1,4 +1,6 @@
 databaseChangeLog:
   - include:
       file: db/changelog/2024-07-24-0850_users-create.yaml
+  - include:
+      file: db/changelog/2024-08-06-1240_tasks-create.yaml
 

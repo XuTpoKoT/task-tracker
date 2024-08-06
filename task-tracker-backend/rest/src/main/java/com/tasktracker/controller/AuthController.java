@@ -35,6 +35,18 @@ public interface AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     JwtAuthenticationResponse signUp(@RequestBody SignUpRequest signUpRequest) throws Exception;
 
+    @Operation(summary = "Авторизация")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(
+                    responseCode = "401",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDescription.class))}),
+            @ApiResponse(
+                    responseCode = "503",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorDescription.class))})
+    })
     @PostMapping("/sign-in")
     JwtAuthenticationResponse signIn(@RequestBody SignInRequest request);
 }

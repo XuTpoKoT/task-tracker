@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -57,15 +56,15 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/auth/*")
-                        .permitAll()
+                            .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, apiPrefix + "/auth/*")
-                        .permitAll()
+                            .permitAll()
                         .requestMatchers(HttpMethod.GET, publicUrls)
-                        .permitAll()
+                            .permitAll()
                         .requestMatchers(HttpMethod.GET, "/hello")
-                        .permitAll()
+                            .permitAll()
                         .anyRequest()
-                        .authenticated())
+                            .authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .exceptionHandling(
                         e->e.accessDeniedHandler((
