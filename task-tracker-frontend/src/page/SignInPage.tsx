@@ -11,23 +11,22 @@ import authStore from "../store/AuthStore";
 const schema = z.object({
     email: z.string().email('Неверный формат электронной почты'),
     password: z.string().min(3, 'Пароль должен содержать не менее 3 символов'),
-    repeatedPassword: z.string().min(3, 'Пароль должен содержать не менее 3 символов'),
 });
 
-type SignUpSchemaType = z.infer<typeof schema>;
+type SignInSchemaType = z.infer<typeof schema>;
 
-const SignUpForm = () => {
-    const setIsAuth = authStore((state) => state.setIsAuth);
+const SignInPage = () => {
     const navigate = useNavigate();
+    const setIsAuth = authStore((state) => state.setIsAuth);
     const {
         control,
         handleSubmit,
-        formState: { errors } } = useForm<SignUpSchemaType>({
+        formState: { errors } } = useForm<SignInSchemaType>({
         resolver: zodResolver(schema)
     });
 
-    const onSubmit : SubmitHandler<SignUpSchemaType> = (data) => {
-        AuthService.signUp(data.email, data.password, data.repeatedPassword)
+    const onSubmit : SubmitHandler<SignInSchemaType> = (data) => {
+        AuthService.signIn(data.email, data.password)
             .then(response => {
                 if (response && response.token) {
                     localStorage.setItem('token', response.token);
@@ -55,7 +54,7 @@ const SignUpForm = () => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign Up
+                    Sign in
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
                     <Controller
@@ -90,34 +89,18 @@ const SignUpForm = () => {
                             />
                         )}
                     />
-                    <Controller
-                        name="repeatedPassword"
-                        control={control}
-                        render={({ field }) => (
-                            <TextField
-                                {...field}
-                                margin="normal"
-                                fullWidth
-                                label="repeatedPassword"
-                                type="password"
-                                id="repeatedPassword"
-                                error={!!errors.repeatedPassword}
-                                helperText={errors.repeatedPassword ? errors.repeatedPassword.message : ''}
-                            />
-                        )}
-                    />
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        Sign Up
+                        Sign In
                     </Button>
                     <Grid container alignItems="center" justifyContent="center">
                         <Grid item>
-                            <Link href="/sign-in" variant="body2">
-                                {"Already have an account? Sign In"}
+                            <Link href="/sign-up" variant="body2">
+                                {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>
                     </Grid>
@@ -127,6 +110,4 @@ const SignUpForm = () => {
     );
 };
 
-export default SignUpForm;
-
-
+export default SignInPage;

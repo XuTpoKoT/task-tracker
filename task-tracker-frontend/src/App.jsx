@@ -1,24 +1,21 @@
 import React from 'react';
-import SignInForm from "./components/SignInForm";
+import SignInPage from "./page/SignInPage";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import SignUpForm from "./components/SignUpForm";
+import SignUpPage from "./page/SignUpPage";
 import "bootstrap/dist/css/bootstrap.min.css";
-import MenuBar from "./components/MenuBar";
+import MainPage from "./page/MainPage";
 
 const App = () => {
     console.log('Token:', localStorage.getItem('token'));
 
     return (
-        <>
-            <BrowserRouter>
-                <MenuBar/>
-                <Routes>
-                    <Route path="/" element={<div>Home</div>} />
-                    <Route path="/sign-up" element={<SignUpForm/>} />
-                    <Route path="/sign-in" element={<SignInForm/>} />
-                </Routes>
-            </BrowserRouter>
-        </>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<MainPage/>} />
+                <Route path="/sign-up" element={<SignUpPage/>} />
+                <Route path="/sign-in" element={<SignInPage/>} />
+            </Routes>
+        </BrowserRouter>
     );
 };
 
