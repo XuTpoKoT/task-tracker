@@ -2,17 +2,16 @@ import React from 'react';
 import '../style/style.css';
 import {Box, Checkbox, IconButton, Typography} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
-import {TaskResponse} from "../models/response/TaskResponse";
+import {TaskResponse} from "../model/response/TaskResponse";
 
 const Task = (task: TaskResponse) => {
+    console.log(task.header);
 
     return (
         <Box sx={{
             mx:0,
             display: 'flex',
             flexDirection: 'row',
-            // justifyContent: 'right',
-            // alignItems: 'right',
             border: '1px dashed purple',
             backgroundColor: '#ffffff',
             borderRadius: 2,
@@ -21,7 +20,7 @@ const Task = (task: TaskResponse) => {
             </Checkbox>
 
             <Typography>
-                Реализация получения сообщений от Kafka
+                {task.header}
             </Typography>
             <IconButton>
                 <DeleteIcon />

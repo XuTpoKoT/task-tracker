@@ -1,6 +1,6 @@
 import $api from "../http";
 import axios from "axios";
-import {TaskResponse} from "../models/response/TaskResponse";
+import {TaskResponse} from "../model/response/TaskResponse";
 
 export default class TaskService {
 

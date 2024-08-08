@@ -2,9 +2,15 @@ import React from 'react';
 import '../style/style.css';
 import {Box, Container} from "@mui/material";
 import Task from "./Task";
+import {TaskResponse} from "../model/response/TaskResponse";
 
-const Done = () => {
+type DoneProps = {
+    tasks: TaskResponse[];
+};
+
+const Done = (props: DoneProps) => {
     console.log("Render Done component");
+    console.log("Tasks in Done: " + props.tasks.length);
     return (
         <Box sx={{
             display: 'flex',
@@ -18,9 +24,15 @@ const Done = () => {
             backgroundColor: '#b9b9b9',
         }}>
             Done tasks
-            <Container sx={{m:5, border: '1px dashed blue' }}>
-                {/*<Task></Task>*/}
-                {/*<Task></Task>*/}
+            <Container sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap:2,
+                border: '1px dashed blue'
+            }}>
+                {props.tasks.map(task => (
+                    <Task {...task}/>
+                ))}
             </Container>
         </Box>
     );

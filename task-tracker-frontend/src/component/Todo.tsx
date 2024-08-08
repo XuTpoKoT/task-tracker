@@ -1,11 +1,15 @@
 import React from 'react';
 import '../style/style.css';
 import {Box, Container} from "@mui/material";
-import {TaskResponse} from "../models/response/TaskResponse";
+import {TaskResponse} from "../model/response/TaskResponse";
 import Task from "./Task";
 
-const Todo = (tasks: TaskResponse[]) => {
-    console.log("Tasks in Todo: " + tasks.length);
+type TodoProps = {
+    tasks: TaskResponse[];
+};
+
+const Todo  = (props: TodoProps) => {
+    console.log("Tasks in Todo component: " + props.tasks.length);
     return (
         <Box sx={{
             display: 'flex',
@@ -25,7 +29,7 @@ const Todo = (tasks: TaskResponse[]) => {
                 gap:2,
                 border: '1px dashed blue',
             }}>
-                {tasks.map(task => (
+                {props.tasks.map(task => (
                     <Task {...task}/>
                 ))}
             </Container>

@@ -3,7 +3,7 @@ import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {Avatar, Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {z} from "zod";
-import AuthService from "../services/AuthService";
+import AuthService from "../service/AuthService";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useNavigate} from "react-router-dom";
 import authStore from "../store/AuthStore";
