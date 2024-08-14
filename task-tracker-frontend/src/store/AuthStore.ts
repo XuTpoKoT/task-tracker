@@ -6,7 +6,7 @@ interface AuthState {
 }
 
 const authStore = create<AuthState>(set => ({
-    isAuth: false,
+    isAuth: localStorage.getItem("token") != null,
     setIsAuth: (isAuth) => set({ isAuth: isAuth }),
 }));
 

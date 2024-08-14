@@ -18,16 +18,16 @@ const Todo  = (props: TodoProps) => {
             justifyContent: 'center',
             alignItems: 'center',
             m:5,
-            border: '1px solid red',
+            // border: '1px solid red',
             borderRadius: 5,
-            backgroundColor: '#b9b9b9',
+            backgroundColor: '#dcdcdc',
         }}>
             Tasks toodo
             <Container sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap:2,
-                border: '1px dashed blue',
+                // border: '1px dashed blue',
             }}>
                 {props.tasks.map(task => (
                     <Task {...task}/>

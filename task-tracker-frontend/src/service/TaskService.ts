@@ -17,5 +17,19 @@ export default class TaskService {
             }
         }
     }
+
+    static async addTask(header: string, description: string|undefined) {
+        try {
+            return await $api.post<TaskResponse>('/tasks', {header, description}).
+            then(response => response.data);
+        } catch (e) {
+            if (e instanceof Error) {
+                console.log(e.message);
+                if (axios.isAxiosError(e)) {
+                    console.log(e.response?.data.message);
+                }
+            }
+        }
+    }
 }
 

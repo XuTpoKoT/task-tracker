@@ -19,16 +19,16 @@ const Done = (props: DoneProps) => {
             justifyContent: 'center',
             alignItems: 'center',
             m:2,
-            border: '1px solid green',
+            // border: '1px solid green',
             borderRadius: 5,
-            backgroundColor: '#b9b9b9',
+            backgroundColor: '#dcdcdc',
         }}>
             Done tasks
             <Container sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap:2,
-                border: '1px dashed blue'
+                // border: '1px dashed blue'
             }}>
                 {props.tasks.map(task => (
                     <Task {...task}/>

@@ -5,23 +5,23 @@ import Todo from "./Todo";
 import Done from "./Done";
 import TaskService from "../service/TaskService";
 import axios from "axios";
-import {TaskResponse} from "../model/response/TaskResponse";
+import CreateTask from "./CreateTask";
+import useTaskStore from "../store/TaskStore";
 
 const MainContent = () => {
     console.log("Render Main component");
     const [status, setStatus] = useState<string>('idle');
-    const [doneTasks, setDoneTasks] = useState<TaskResponse[]>([]);
-    const [todoTasks, setTodoTasks] = useState<TaskResponse[]>([]);
+    const tasks = useTaskStore((state) => state.tasks);
+    const setTasks = useTaskStore((state) => state.setTasks);
 
     useEffect(() =>  {
         setStatus("loading");
         TaskService.getTasks()
             .then((response) => {
-                if (Array.isArray(response)) {
+                if (response != undefined) {
                     console.log("Tasks response:");
                     console.log(response);
-                    setTodoTasks(response.filter(task => !task.isDone));
-                    setDoneTasks(response.filter(task => task.isDone));
+                    setTasks(response);
                 }
                 setStatus("success");
             })
@@ -38,17 +38,18 @@ const MainContent = () => {
 
     if (status != "success") {
         return (
-            <Container sx={{mt:15, mx:60, border: '1px dashed grey', display: 'flex', flexDirection: 'row',
+            <Container sx={{mt:15, mx:50, border: '1px dashed grey', display: 'flex', flexDirection: 'row',
                 justifyContent: 'center', alignItems: 'center'}}>
             </Container>
         )
     }
 
     return (
-        <Container sx={{mt:15, mx:60, border: '1px dashed grey', display: 'flex', flexDirection: 'row',
+        <Container sx={{mt:15, mx:50, border: '1px dashed grey', display: 'flex', flexDirection: 'row',
             justifyContent: 'center', alignItems: 'center'}}>
-            <Todo tasks={todoTasks}></Todo>
-            <Done tasks={doneTasks}></Done>
+            <Todo tasks={tasks.filter(task => !task.isDone)}></Todo>
+            <Done tasks={tasks.filter(task => task.isDone)}></Done>
+            <CreateTask></CreateTask>
         </Container>
     );
 };
