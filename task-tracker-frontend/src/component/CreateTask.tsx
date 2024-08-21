@@ -4,7 +4,6 @@ import {Box, Button, Container, TextField} from "@mui/material";
 import {z} from "zod";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import TaskService from "../service/TaskService";
 import useTaskStore from "../store/TaskStore";
 
 const schema = z.object({
@@ -25,12 +24,7 @@ const CreateTask = () => {
     });
     const onSubmit : SubmitHandler<SchemaType> = (data) => {
         console.log("submitting create task " + data.header);
-        TaskService.addTask(data.header, data.description)
-            .then((response)=>{
-                if (response != undefined){
-                    addTask(response);
-                }
-            });
+        addTask(data.header, data.description);
     };
 
     return (

@@ -1,13 +1,13 @@
 import React from 'react';
 import {AppBar, Box, Button, Toolbar, Typography} from '@mui/material';
 import {Link} from 'react-router-dom';
-import authStore from "../store/AuthStore";
+import useAuthStore from "../store/AuthStore";
 import '../style/style.css';
 import menuBtnStyle from "../style/style";
 
 const MenuBar = () => {
-    const isAuth = authStore((state) => state.isAuth);
-    const setIsAuth = authStore((state) => state.setIsAuth);
+    const isAuth = useAuthStore((state) => state.isAuth);
+    const setIsAuth = useAuthStore((state) => state.setIsAuth);
 
     return (
         <AppBar sx={{ bgcolor: "#3636e3"}} component="nav">

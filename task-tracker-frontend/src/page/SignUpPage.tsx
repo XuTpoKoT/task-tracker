@@ -3,10 +3,11 @@ import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {Avatar, Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {z} from "zod";
-import AuthService from "../service/AuthService";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useNavigate} from "react-router-dom";
-import authStore from "../store/AuthStore";
+import useAuthStore from "../store/AuthStore";
+import {RequestStatus} from "../service/RequestStatus";
+import ErrorAlert from "../component/ErrorAlert";
 
 const schema = z.object({
     email: z.string().email('Неверный формат электронной почты'),
@@ -17,8 +18,12 @@ const schema = z.object({
 type SignUpSchemaType = z.infer<typeof schema>;
 
 const SignUpPage = () => {
-    const setIsAuth = authStore((state) => state.setIsAuth);
+    console.log('Render SignUpPage')
+    const status = useAuthStore((state) => state.status)
+    const setStatus = useAuthStore((state) => state.setStatus)
+    const error = useAuthStore((state) => state.error)
     const navigate = useNavigate();
+    const signUp = useAuthStore((state) => state.signUp);
     const {
         control,
         handleSubmit,
@@ -26,19 +31,15 @@ const SignUpPage = () => {
         resolver: zodResolver(schema)
     });
 
-    const onSubmit : SubmitHandler<SignUpSchemaType> = (data) => {
-        AuthService.signUp(data.email, data.password, data.repeatedPassword)
-            .then(response => {
-                if (response && response.token) {
-                    localStorage.setItem('token', response.token);
-                    console.log('Token saved:', localStorage.getItem('token'));
-                    setIsAuth(true);
-                    navigate('/');
-                } else {
-                    console.log('No token received in response');
-                }
-            });
+    const onSubmit : SubmitHandler<SignUpSchemaType> = async (data) => {
+        await signUp(data.email, data.password, data.repeatedPassword, navigate)
     };
+
+    if (status === RequestStatus.Error) {
+        return (
+            <ErrorAlert message={error} onClose={() => setStatus(RequestStatus.Loading)}></ErrorAlert>
+        )
+    }
 
     return (
         <Container component="main" maxWidth="xs">

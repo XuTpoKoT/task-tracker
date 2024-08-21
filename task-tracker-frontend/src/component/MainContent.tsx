@@ -1,45 +1,30 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import '../style/style.css';
 import {Container} from "@mui/material";
 import Todo from "./Todo";
 import Done from "./Done";
-import TaskService from "../service/TaskService";
-import axios from "axios";
 import CreateTask from "./CreateTask";
 import useTaskStore from "../store/TaskStore";
+import {RequestStatus} from "../service/RequestStatus";
+import ErrorAlert from "./ErrorAlert";
 
 const MainContent = () => {
-    console.log("Render Main component");
-    const [status, setStatus] = useState<string>('idle');
-    const tasks = useTaskStore((state) => state.tasks);
-    const setTasks = useTaskStore((state) => state.setTasks);
+    console.log("Render Main component")
+    const status = useTaskStore((state) => state.status)
+    const setStatus = useTaskStore((state) => state.setStatus)
+    const error = useTaskStore((state) => state.error)
+    const tasks = useTaskStore((state) => state.tasks)
+    const fetchTasks = useTaskStore((state) => state.fetchTasks)
 
     useEffect(() =>  {
-        setStatus("loading");
-        TaskService.getTasks()
-            .then((response) => {
-                if (response != undefined) {
-                    console.log("Tasks response:");
-                    console.log(response);
-                    setTasks(response);
-                }
-                setStatus("success");
-            })
-            .catch((e) => {
-                setStatus("error");
-                if (e instanceof Error) {
-                    console.log(e.message);
-                    if (axios.isAxiosError(e)) {
-                        console.log(e.response?.data.message);
-                    }
-                }
-            });
+        fetchTasks();
     }, []);
 
-    if (status != "success") {
+    if (status === RequestStatus.Error) {
         return (
-            <Container sx={{mt:15, mx:50, border: '1px dashed grey', display: 'flex', flexDirection: 'row',
+            <Container sx={{mt:15, mx:50, display: 'flex', flexDirection: 'row',
                 justifyContent: 'center', alignItems: 'center'}}>
+                <ErrorAlert message={error} onClose={() => setStatus(RequestStatus.Loading)}></ErrorAlert>
             </Container>
         )
     }

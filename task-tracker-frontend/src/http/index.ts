@@ -15,4 +15,9 @@ $api.interceptors.request.use((config) => {
     return config;
 })
 
+export type ErrorResponse = {
+    message: string;
+    code?: number;
+}
+
 export default $api;

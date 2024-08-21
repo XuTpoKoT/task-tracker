@@ -9,8 +9,7 @@ type DoneProps = {
 };
 
 const Done = (props: DoneProps) => {
-    console.log("Render Done component");
-    console.log("Tasks in Done: " + props.tasks.length);
+    console.log("Render Done component. Tasks inside: " + props.tasks.length);
     return (
         <Box sx={{
             display: 'flex',

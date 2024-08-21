@@ -7,7 +7,7 @@ import useTaskStore from "../store/TaskStore";
 
 const Task = (task: TaskResponse) => {
     const removeTask = useTaskStore((state) => state.removeTask);
-    console.log(task.header);
+    const updateTask = useTaskStore((state) => state.updateTask);
 
     return (
         <Box sx={{
@@ -18,7 +18,8 @@ const Task = (task: TaskResponse) => {
             backgroundColor: '#ffffff',
             borderRadius: 2,
         }}>
-            <Checkbox>
+            <Checkbox onClick={() => {updateTask(task.id, task.header, task.description, !task.isDone)}}
+                checked={task.isDone}>
             </Checkbox>
 
             <Typography>

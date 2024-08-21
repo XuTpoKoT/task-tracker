@@ -9,7 +9,7 @@ type TodoProps = {
 };
 
 const Todo  = (props: TodoProps) => {
-    console.log("Tasks in Todo component: " + props.tasks.length);
+    console.log("Render Todo component. Tasks inside: " + props.tasks.length);
     return (
         <Box sx={{
             display: 'flex',

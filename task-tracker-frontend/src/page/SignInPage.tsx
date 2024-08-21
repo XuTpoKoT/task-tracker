@@ -3,10 +3,11 @@ import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {Avatar, Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {z} from "zod";
-import AuthService from "../service/AuthService";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useNavigate} from "react-router-dom";
-import authStore from "../store/AuthStore";
+import useAuthStore from "../store/AuthStore";
+import {RequestStatus} from "../service/RequestStatus";
+import ErrorAlert from "../component/ErrorAlert";
 
 const schema = z.object({
     email: z.string().email('Неверный формат электронной почты'),
@@ -16,8 +17,12 @@ const schema = z.object({
 type SignInSchemaType = z.infer<typeof schema>;
 
 const SignInPage = () => {
+    console.log('Render SignInPage')
+    const status = useAuthStore((state) => state.status)
+    const setStatus = useAuthStore((state) => state.setStatus)
+    const error = useAuthStore((state) => state.error)
     const navigate = useNavigate();
-    const setIsAuth = authStore((state) => state.setIsAuth);
+    const signIn = useAuthStore((state) => state.signIn);
     const {
         control,
         handleSubmit,
@@ -25,19 +30,15 @@ const SignInPage = () => {
         resolver: zodResolver(schema)
     });
 
-    const onSubmit : SubmitHandler<SignInSchemaType> = (data) => {
-        AuthService.signIn(data.email, data.password)
-            .then(response => {
-                if (response && response.token) {
-                    localStorage.setItem('token', response.token);
-                    console.log('Token saved:', localStorage.getItem('token'));
-                    setIsAuth(true);
-                    navigate('/');
-                } else {
-                    console.log('No token received in response');
-                }
-            });
+    const onSubmit : SubmitHandler<SignInSchemaType> = async (data) => {
+        await signIn(data.email, data.password, navigate)
     };
+
+    if (status === RequestStatus.Error) {
+        return (
+            <ErrorAlert message={error} onClose={() => setStatus(RequestStatus.Loading)}></ErrorAlert>
+        )
+    }
 
     return (
         <Container component="main" maxWidth="xs">
