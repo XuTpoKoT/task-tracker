@@ -23,9 +23,10 @@ public class TaskControllerImpl implements TaskController {
     private final TaskRepo taskRepo;
     private final TaskMapper taskMapper;
     @Override
-    public void addTask(CreateTaskRequest request) {
+    public TaskResponse addTask(CreateTaskRequest request) {
         AppUser appUser = SecurityUtils.getSecurityUser().getAppUser();
-        taskRepo.save(taskMapper.dtoToTask(request, appUser.getId()));
+        Task task = taskRepo.save(taskMapper.dtoToTask(request, appUser.getId()));
+        return taskMapper.taskToDto(task);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class TaskControllerImpl implements TaskController {
     }
 
     @Override
-    public void updateTask(UUID taskId, UpdateTaskRequest request) {
+    public TaskResponse updateTask(UUID taskId, UpdateTaskRequest request) {
         AppUser appUser = SecurityUtils.getSecurityUser().getAppUser();
         Task task = taskRepo.findById(taskId).orElseThrow(() ->
                 new EntityNotFoundException("Task " + taskId + " not found"));
@@ -67,6 +68,7 @@ public class TaskControllerImpl implements TaskController {
         task.setHeader(request.header());
         task.setDescription(request.description());
         task.setDone(request.isDone());
-        taskRepo.save(task);
+        Task updatedTask = taskRepo.save(task);
+        return taskMapper.taskToDto(updatedTask);
     }
 }

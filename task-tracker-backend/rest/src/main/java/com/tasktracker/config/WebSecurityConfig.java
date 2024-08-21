@@ -61,8 +61,6 @@ public class WebSecurityConfig {
                             .permitAll()
                         .requestMatchers(HttpMethod.GET, publicUrls)
                             .permitAll()
-                        .requestMatchers(HttpMethod.GET, "/hello")
-                            .permitAll()
                         .anyRequest()
                             .authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
@@ -79,7 +77,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173/"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
         configuration.setAllowCredentials(true);
 

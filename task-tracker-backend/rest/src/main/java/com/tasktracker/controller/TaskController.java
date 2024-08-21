@@ -24,7 +24,9 @@ public interface TaskController {
     @Operation(summary = "Создание новой задачи")
     @ApiResponses({
             @ApiResponse(
-                    responseCode = "201"),
+                    responseCode = "201",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = TaskResponse.class)))}),
             @ApiResponse(
                     responseCode = "400",
                     content = {@Content(mediaType = "application/json",
@@ -40,7 +42,7 @@ public interface TaskController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    void addTask(@RequestBody CreateTaskRequest request);
+    TaskResponse addTask(@RequestBody CreateTaskRequest request);
 
     @Operation(summary = "Получение всех задач пользователя")
     @ApiResponses({
@@ -136,5 +138,5 @@ public interface TaskController {
                             schema = @Schema(implementation = ErrorDescription.class))})
     })
     @PatchMapping("/{taskId}")
-    void updateTask(@PathVariable UUID taskId, @RequestBody UpdateTaskRequest request);
+    TaskResponse updateTask(@PathVariable UUID taskId, @RequestBody UpdateTaskRequest request);
 }
