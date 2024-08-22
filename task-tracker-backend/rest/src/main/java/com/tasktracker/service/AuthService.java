@@ -28,6 +28,7 @@ public class AuthService {
     private final UserRepo userRepo;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final MailSenderService mailSenderService;
 
     public JwtAuthenticationResponse signUp(SignUpRequest req) {
         try {
@@ -41,6 +42,8 @@ public class AuthService {
                     req.password()
             ));
             log.info("End authenticationManager.authenticate");
+            String message = "Hello, " + appUser.getEmail() + "! You have successfully signed up in Task Tracker!";
+            mailSenderService.sendMessage(message,"registration");
             return generateToken(appUser);
         } catch (DataIntegrityViolationException e) {
             throw new OccupiedEmailException("Email " + req.email() + " is occupied", e);

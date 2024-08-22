@@ -11,6 +11,11 @@ spring:
         default_schema: public
     show-sql: true
     open-in-view: false
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 server:
   ip: ${SERVER_IP:localhost}
   port:
