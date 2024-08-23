@@ -1,5 +1,6 @@
 package com.tasktracker.service;
 
+import com.tasktracker.dto.MessageDto;
 import com.tasktracker.dto.request.SignInRequest;
 import com.tasktracker.dto.request.SignUpRequest;
 import com.tasktracker.dto.response.JwtAuthenticationResponse;
@@ -42,8 +43,12 @@ public class AuthService {
                     req.password()
             ));
             log.info("End authenticationManager.authenticate");
-            String message = "Hello, " + appUser.getEmail() + "! You have successfully signed up in Task Tracker!";
-            mailSenderService.sendMessage(message,"registration");
+            MessageDto messageDto = MessageDto.builder()
+                    .email(appUser.getEmail())
+                    .title("TaskTracker registration")
+                    .body("You have successfully signed up in Task Tracker!")
+                    .build();
+            mailSenderService.sendMessage(messageDto,"registration");
             return generateToken(appUser);
         } catch (DataIntegrityViolationException e) {
             throw new OccupiedEmailException("Email " + req.email() + " is occupied", e);

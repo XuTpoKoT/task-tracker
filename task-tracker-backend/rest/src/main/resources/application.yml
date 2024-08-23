@@ -12,10 +12,16 @@ spring:
     show-sql: true
     open-in-view: false
   kafka:
-    bootstrap-servers: localhost:29092
+    bootstrap-servers: ${BOOTSTRAP_SERVERS:localhost:29092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    properties:
+      spring:
+        json:
+          type:
+            default: com.tasktracker.dto.MessageDto
+          trusted: "*"
 server:
   ip: ${SERVER_IP:localhost}
   port:

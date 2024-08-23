@@ -14,22 +14,21 @@ services:
     container_name: tt_zookeeper
     image: confluentinc/cp-zookeeper:7.4.4
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_INTERNAL_PORT}
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - 22181:2181
+      - 22181:${ZOOKEEPER_INTERNAL_PORT}
   kafka:
     container_name: tt_kafka
     image: confluentinc/cp-kafka:7.4.4
     depends_on:
       - zookeeper
     ports:
-      - 9092:9092
-      - 29092:29092
+      - "${KAFKA_EXTERNAL_PORT}:${KAFKA_EXTERNAL_PORT}"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_INTERNAL_PORT}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:${KAFKA_INTERNAL_PORT},PLAINTEXT_HOST://localhost:${KAFKA_EXTERNAL_PORT}
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -39,15 +38,17 @@ services:
       - kafka
     image: provectuslabs/kafka-ui:latest
     ports:
-      - 8082:8080
+      - "${KAFKA_UI_PORT}:${KAFKA_UI_PORT}"
     environment:
+      SERVER_PORT: ${KAFKA_UI_PORT}
       DYNAMIC_CONFIG_ENABLED: true
       KAFKA_CLUSTERS_0_NAME: reg_test
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: PLAINTEXT://kafka:9092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: PLAINTEXT://kafka:${KAFKA_INTERNAL_PORT}
   rest:
     container_name: tt_rest
     depends_on:
       - postgres
+      - kafka
     ports:
       - ${REST_PORT}:${REST_PORT}
     build:
@@ -59,8 +60,20 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
       API_PORT: ${REST_PORT}
+      BOOTSTRAP_SERVERS: kafka:${KAFKA_INTERNAL_PORT}
+  email_sender:
+    container_name: tt_email_sender
+    depends_on:
+      - kafka
+    build:
+      context: task-tracker-backend
+      dockerfile: Dockerfile.email
+    environment:
+      BOOTSTRAP_SERVERS: kafka:${KAFKA_INTERNAL_PORT}
   front:
     container_name: tt_front
+    depends_on:
+      - rest
     ports:
       - ${FRONT_PORT}:5173
     build:
