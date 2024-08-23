@@ -70,12 +70,16 @@ services:
       dockerfile: Dockerfile.email
     environment:
       BOOTSTRAP_SERVERS: kafka:${KAFKA_INTERNAL_PORT}
+      EMAIL_SERVICE_HOST:
+      EMAIL_SERVICE_PORT:
+      EMAIL_SERVICE_USERNAME:
+      EMAIL_SERVICE_PASSWORD:
   front:
     container_name: tt_front
     depends_on:
       - rest
     ports:
-      - ${FRONT_PORT}:5173
+      - ${FRONT_PORT}:80
     build:
       context: task-tracker-frontend
     environment:
