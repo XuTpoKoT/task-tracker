@@ -28,5 +28,6 @@ public class Task {
     @Column(name = "is_done", nullable = false)
     private boolean isDone;
     @Column(name = "done_at")
+    @Setter
     private ZonedDateTime doneAt;
 }

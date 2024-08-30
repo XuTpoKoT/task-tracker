@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -65,9 +67,18 @@ public class TaskControllerImpl implements TaskController {
         if (!Objects.equals(task.getUserId(), appUser.getId())) {
             throw new AccessDeniedException("Access denied");
         }
-        task.setHeader(request.header());
-        task.setDescription(request.description());
-        task.setDone(request.isDone());
+        if (request.header() != null) {
+            task.setHeader(request.header());
+        }
+        if (request.description() != null) {
+            task.setHeader(request.description());
+        }
+        if (request.isDone() != null) {
+            task.setDone(request.isDone());
+            if (request.isDone()) {
+                task.setDoneAt(ZonedDateTime.now().withZoneSameLocal(ZoneId.of("UTC")));
+            }
+        }
         Task updatedTask = taskRepo.save(task);
         return taskMapper.taskToDto(updatedTask);
     }
