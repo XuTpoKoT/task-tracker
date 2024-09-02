@@ -1,0 +1,19 @@
+FROM gradle:8.6 as build
+WORKDIR /app
+COPY build.gradle settings.gradle /app/
+COPY rest /app/rest
+RUN gradle :rest:bootJar
+
+FROM openjdk:17-jdk-slim as builder
+WORKDIR /app
+ARG JAR_NAME=rest-1.0.jar
+COPY --from=build /app/rest/build/libs/${JAR_NAME} /app/app.jar
+RUN java -Djarmode=layertools -jar app.jar extract
+
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=builder app/dependencies/ ./
+COPY --from=builder app/snapshot-dependencies/ ./
+COPY --from=builder app/spring-boot-loader/ ./
+COPY --from=builder app/application/ ./
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]

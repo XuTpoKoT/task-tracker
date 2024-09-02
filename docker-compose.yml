@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: postgres:15.5
+    container_name: tt_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:5432"
+  zookeeper:
+    container_name: tt_zookeeper
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_INTERNAL_PORT}
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:${ZOOKEEPER_INTERNAL_PORT}
+  kafka:
+    container_name: tt_kafka
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - zookeeper
+    ports:
+      - "${KAFKA_EXTERNAL_PORT}:${KAFKA_EXTERNAL_PORT}"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_INTERNAL_PORT}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:${KAFKA_INTERNAL_PORT},PLAINTEXT_HOST://localhost:${KAFKA_EXTERNAL_PORT}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  kui:
+    container_name: tt_kui
+    depends_on:
+      - kafka
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "${KAFKA_UI_PORT}:${KAFKA_UI_PORT}"
+    environment:
+      SERVER_PORT: ${KAFKA_UI_PORT}
+      DYNAMIC_CONFIG_ENABLED: true
+      KAFKA_CLUSTERS_0_NAME: reg_test
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: PLAINTEXT://kafka:${KAFKA_INTERNAL_PORT}
+  rest:
+    container_name: tt_rest
+    depends_on:
+      - postgres
+      - kafka
+    ports:
+      - ${REST_PORT}:${REST_PORT}
+    build:
+      context: task-tracker-backend
+      dockerfile: Dockerfile.rest
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
+      API_PORT: ${REST_PORT}
+      BOOTSTRAP_SERVERS: kafka:${KAFKA_INTERNAL_PORT}
+  email_sender:
+    container_name: tt_email_sender
+    depends_on:
+      - kafka
+    build:
+      context: task-tracker-backend
+      dockerfile: Dockerfile.email
+    environment:
+      BOOTSTRAP_SERVERS: kafka:${KAFKA_INTERNAL_PORT}
+      EMAIL_SERVICE_HOST:
+      EMAIL_SERVICE_PORT:
+      EMAIL_SERVICE_USERNAME:
+      EMAIL_SERVICE_PASSWORD:
+  scheduler:
+    container_name: tt_scheduler
+    depends_on:
+      - kafka
+    build:
+      context: task-tracker-backend
+      dockerfile: Dockerfile.scheduler
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
+      BOOTSTRAP_SERVERS: kafka:${KAFKA_INTERNAL_PORT}
+  front:
+    container_name: tt_front
+    depends_on:
+      - rest
+    ports:
+      - ${FRONT_PORT}:80
+    build:
+      context: task-tracker-frontend
+    environment:
+      PORT: ${FRONT_PORT}
+volumes:
+  postgres_data:
+
